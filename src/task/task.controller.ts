@@ -2,11 +2,15 @@ import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseU
 import { TaskService } from './task.service';
 import { CreateTaskDTO } from './dto/create-task.dto';
 import { UpdateTaskDTO } from './dto/update-task.dto';
+import { ApiOperation, ApiParam } from '@nestjs/swagger';
 
 @Controller('tasks')
 export class TaskController {
     constructor( private readonly taskService: TaskService){}
 
+    @ApiOperation({
+        summary: 'Get all task',
+    })
     @Get()
     async findAll() {
         try {
@@ -16,24 +20,35 @@ export class TaskController {
         }
     }
 
+    @ApiOperation({
+        summary: 'Create a task',
+    })
     @Post()
-    async create(@Body() createScheduleDTO: CreateTaskDTO) {
+    async create(@Body() createTaskDto: CreateTaskDTO) {
         try {
-            return await this.taskService.create(createScheduleDTO);
+            return await this.taskService.create(createTaskDto);
         } catch (error) {
             throw new HttpException(error.status, error.message || HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
+    @ApiOperation({
+        summary: 'Update a task',
+    })
+    @ApiParam({ name: 'id', type: 'number', description: 'The ID of the item' })
     @Put(':id')
-    async update(@Param('id', ParseUUIDPipe) id: string, @Body() updateScheduleDTO: UpdateTaskDTO) {
+    async update(@Param('id', ParseUUIDPipe) id: string, @Body() updateTaskDTO: UpdateTaskDTO) {
         try {
-            return await this.taskService.update(id, updateScheduleDTO);
+            return await this.taskService.update(id, updateTaskDTO);
         } catch (error) {
             throw new HttpException(error.status, error.message || HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
+    @ApiOperation({
+        summary: 'Delete a task',
+    })
+    @ApiParam({ name: 'id', type: 'number', description: 'The ID of the item' })
     @Delete(':id')
     async delete(@Param('id', ParseUUIDPipe) id: string) {
         try {

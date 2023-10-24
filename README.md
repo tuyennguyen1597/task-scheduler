@@ -5,3 +5,6 @@ node v16
 then run 
 - npm run start:dev
 to trigger the application
+
+#After running the application, Open API Document on 
+- localhost:3002
