@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsDateString, IsNotEmpty, IsNumber, IsOptional, Validate } from "class-validator";
-import { EndDateValidator } from "src/shared/end-date-validator.helper";
-import { StartDateValidator } from "src/shared/start-date-validator.helper";
+import { EndDateValidator } from "../../shared/end-date-validator.helper";
+import { StartDateValidator } from "../../shared/start-date-validator.helper";
 
 export class CreateScheduleDTO {
     @ApiProperty({
