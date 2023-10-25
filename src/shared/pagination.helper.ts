@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { PageMetaDto } from 'src/common/dto/page-meta.dto';
-import { PageOptionsDTO } from 'src/common/dto/page-option.dto';
-import { PageDTO } from 'src/common/dto/page.dto';
+import { PageMetaDto } from '../common/dto/page-meta.dto';
+import { PageOptionsDTO } from '../common/dto/page-option.dto';
+import { PageDTO } from '../common/dto/page.dto';
 
 @Injectable()
 export class PaginationService {

@@ -4,10 +4,10 @@ import { CreateScheduleDTO } from './dto/create-schedule.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UpdateScheduleDTO } from './dto/update-schedule.dto';
-import { PaginationService } from 'src/shared/pagination.helper';
-import { PageDTO } from 'src/common/dto/page.dto';
-import { PageOptionsDTO } from 'src/common/dto/page-option.dto';
-import { CacheService } from 'src/shared/cache/cache.helper';
+import { PaginationService } from '..//shared/pagination.helper';
+import { PageDTO } from '../common/dto/page.dto';
+import { PageOptionsDTO } from '../common/dto/page-option.dto';
+import { CacheService } from '../shared/cache/cache.helper';
 import { FilterScheduleDTO } from './dto/filter-schedule.dto';
 
 @Injectable()

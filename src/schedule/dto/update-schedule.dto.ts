@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsDateString, IsNumber, IsOptional, IsUUID } from "class-validator";
 
 export class UpdateScheduleDTO {
-    @ApiProperty({
+    @ApiPropertyOptional({
         name: 'accountId',
         example: '1',
         type: Number
@@ -11,7 +11,7 @@ export class UpdateScheduleDTO {
     @IsNumber()
     accountId: number;
 
-    @ApiProperty({
+    @ApiPropertyOptional({
         name: 'agentId',
         example: '1',
         type: Number
@@ -34,7 +34,6 @@ export class UpdateScheduleDTO {
         example: '2026-10-24',
         type: Date
     })
-    @IsOptional()
     @IsOptional()
     @IsDateString({ strict: true })
     endDate: Date;

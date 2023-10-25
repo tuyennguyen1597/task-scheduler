@@ -1,16 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PageOptionsDTO } from 'src/common/dto/page-option.dto';
-import { PageDTO } from 'src/common/dto/page.dto';
-import { Task } from 'src/models/task.entity';
-import { CacheService } from 'src/shared/cache/cache.helper';
-import { PaginationService } from 'src/shared/pagination.helper';
+import { PageOptionsDTO } from '../common/dto/page-option.dto';
+import { PageDTO } from '../common/dto/page.dto';
+import { Task } from '../models/task.entity';
+import { CacheService } from '../shared/cache/cache.helper';
+import { PaginationService } from '../shared/pagination.helper';
 import { Repository } from 'typeorm';
 import { CreateTaskDTO } from './dto/create-task.dto';
 import { UpdateTaskDTO } from './dto/update-task.dto';
-import { Schedule } from 'src/models/scheduler.entity';
-import { ScheduleService } from 'src/schedule/schedule.service';
-import { FilterScheduleDTO } from 'src/schedule/dto/filter-schedule.dto';
+import { Schedule } from '../models/scheduler.entity';
+import { ScheduleService } from '../schedule/schedule.service';
+import { FilterScheduleDTO } from '../schedule/dto/filter-schedule.dto';
 
 @Injectable()
 export class TaskService {

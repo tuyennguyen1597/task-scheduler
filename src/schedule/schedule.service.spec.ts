@@ -4,9 +4,9 @@ import { Repository } from 'typeorm';
 import { Schedule } from '../models/scheduler.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { CreateScheduleDTO } from './dto/create-schedule.dto';
-import { PaginationService } from 'src/shared/pagination.helper';
-import { CacheService } from 'src/shared/cache/cache.helper';
-import { PageDTO } from 'src/common/dto/page.dto';
+import { PaginationService } from '../shared/pagination.helper';
+import { CacheService } from '../shared/cache/cache.helper';
+import { UpdateScheduleDTO } from './dto/update-schedule.dto';
 
 describe('Schedule Test suite', () => {
     let service: ScheduleService;
@@ -24,6 +24,26 @@ describe('Schedule Test suite', () => {
         delete: jest.fn(),
     }
 
+    const mockCache = {
+        addValueToCache: jest.fn()
+    }
+
+    const mockPage = {
+        withPage: jest.fn((schedules) => {
+            return {
+                data: schedules,
+                meta: {
+                    page: 1,
+                    take: 2,
+                    itemCount: 2,
+                    pageCount: 1,
+                    hasPreviousPage: false,
+                    hasNextPage: false
+                }
+            }
+        })
+    }
+
     beforeEach(async () => {
         const module = await Test.createTestingModule({
             providers: [
@@ -32,8 +52,14 @@ describe('Schedule Test suite', () => {
                     provide: SCHEDULE_REPOSITORY_TOKEN,
                     useValue: mockScheduleRepository
                 },
-                PaginationService,
-                CacheService
+                {
+                    provide: PaginationService,
+                    useValue: mockPage
+                },
+                {
+                    provide: CacheService,
+                    useValue: mockCache
+                }
             ],
         }).compile();
 
@@ -41,6 +67,14 @@ describe('Schedule Test suite', () => {
         pageService = module.get<PaginationService>(PaginationService);
         cacheService = module.get<CacheService>(CacheService);
         scheduleRepository = module.get<Repository<Schedule>>(SCHEDULE_REPOSITORY_TOKEN);
+
+        service.finById = jest.fn().mockResolvedValue({
+            id: "661842e6-167d-4435-8057-772854e5a230",
+            accountId: 3,
+            agentId: 3,
+            startTime: "2026-10-24T13:00:00.000Z",
+            endTime: "2027-01-23T13:00:00.000Z"
+        })
     });
 
     afterEach(() => {
@@ -72,23 +106,12 @@ describe('Schedule Test suite', () => {
             schedule2.endTime = new Date()
 
             const mockSchedulers: Schedule[] = [schedule1, schedule2]
-            const mockSchedulersWithPage: PageDTO<Schedule> = {
-                data: mockSchedulers,
-                meta: {
-                    page: 1,
-                    take: 2,
-                    itemCount: 2,
-                    pageCount: 1,
-                    hasPreviousPage: false,
-                    hasNextPage: false
-                }
-            }
 
-            jest.spyOn(service, 'findAll').mockResolvedValue(mockSchedulersWithPage)
+            jest.spyOn(service, 'findAll').mockResolvedValue(pageService.withPage(mockSchedulers))
 
             const schedulers = await service.findAll();
 
-            expect(schedulers).toEqual(mockSchedulersWithPage)
+            expect(schedulers.data).toEqual(mockSchedulers);
         })
     })
 
@@ -98,15 +121,53 @@ describe('Schedule Test suite', () => {
         })
 
         it('should create new schedule', async () => {
-            const newSchedule: CreateScheduleDTO = {
+            const newScheduleDto: CreateScheduleDTO = {
                 startTime: new Date(),
                 endTime: new Date(),
                 agentId: 1,
                 accountId: 1,
             };
 
-            const createdSchedule = await service.create(newSchedule);
-            expect(createdSchedule.agentId).toBe(1);
+            const newSchedule = new Schedule();
+            Object.assign(newSchedule, newScheduleDto)
+            jest.spyOn(scheduleRepository, 'save').mockResolvedValue(newSchedule);
+
+            const createdSchedule = await service.create(newScheduleDto);
+
+            expect(createdSchedule).toBe(newSchedule);
+            expect(scheduleRepository.save).toHaveBeenCalledWith(newSchedule);
+            expect(cacheService.addValueToCache).toHaveBeenCalledWith('schedule', newSchedule);
+        })
+    })
+
+    describe('update', () => {
+        it('should be defined', () => {
+            expect(service.update).toBeDefined();
+        })
+
+        it('should update schedule', async () => {
+            const updateScheduleDto: UpdateScheduleDTO = {
+                accountId: 2,
+                agentId: 1,
+                startDate: new Date("2026-10-24T13:00:00.000Z"),
+                endDate: new Date("2027-01-23T13:00:00.000Z")
+            };
+
+            const mockSchedule = {
+                id: "661842e6-167d-4435-8057-772854e5a230",
+                accountId: 3,
+                agentId: 3,
+                startTime: "2026-10-24T13:00:00.000Z",
+                endTime: "2027-01-23T13:00:00.000Z"
+            }
+            
+            const updatedSchedule = await scheduleRepository.save(mockSchedule)
+
+            const updated = await service.update("661842e6-167d-4435-8057-772854e5a230", updateScheduleDto)
+
+            expect(updated.accountId).toEqual( updatedSchedule.accountId);
+            expect(service.finById).toHaveBeenCalledWith(mockSchedule.id)
+            expect(cacheService.addValueToCache).toHaveBeenCalledWith('schedule', updated);
         })
     })
 });
