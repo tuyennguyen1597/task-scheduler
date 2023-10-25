@@ -8,3 +8,6 @@ to trigger the application
 
 #After running the application, Open API Document on 
 - localhost:3002
+
+#Run test using:
+- npm run test:watch
